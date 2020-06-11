@@ -10,6 +10,7 @@
 #include <set>
 #include "symmetriceigensolver3x3.h"
 
+
 #define FLAG_SHOW_AXES       1
 #define FLAG_SHOW_WIRE       2
 #define FLAG_SHOW_SOLID      4
@@ -17,9 +18,10 @@
 #define FLAG_SHOW_PLANE     16
 #define FLAG_SHOW_AABB      32
 
-void Task_1_FindCenterMass(std::vector<vec> &vertices, vec &cm);
 
-void Task_2_Erase_Tria(std::vector<vvr::Triangle> &triangles);
+void getMeshAABB(std::vector<vec>& vertices, vvr::Box3D& aabb);
+bool checkBoxCollision(vvr::Box3D box1, vvr::Box3D box2);
+bool checkTriangleCollision(vvr::Triangle tri1, vvr::Triangle tri2);
 
 class Mesh3DScene : public vvr::Scene
 {

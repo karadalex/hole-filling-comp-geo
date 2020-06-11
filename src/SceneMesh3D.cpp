@@ -55,23 +55,11 @@ void Mesh3DScene::resize()
 
 void Mesh3DScene::Tasks()
 {
-	//!//////////////////////////////////////////////////////////////////////////////////
-	//! Task 1 
-	//!//////////////////////////////////////////////////////////////////////////////////
-
 	m_center_mass = vec(-10, 0, 0);
-	Task_1_FindCenterMass(m_model.getVertices(), m_center_mass);
-	//!//////////////////////////////////////////////////////////////////////////////////
-	//! Task 2 
-	//!//////////////////////////////////////////////////////////////////////////////////
 
-	Task_2_Erase_Tria(m_model.getTriangles());
-	m_model_original = m_model;
+	// Calculate AABB for the 2 loaded models
+	getMeshAABB(m_model_original.getVertices(), m_aabb);
 
-	 
-	m_model = Mesh(m_model_original);
-		
-	 
 }
 
 void Mesh3DScene::arrowEvent(ArrowDir dir, int modif)
@@ -92,12 +80,12 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 
 	switch (key)
 	{
-	case 's': m_style_flag ^= FLAG_SHOW_SOLID; break;
-	case 'w': m_style_flag ^= FLAG_SHOW_WIRE; break;
-	case 'n': m_style_flag ^= FLAG_SHOW_NORMALS; break;
-	case 'a': m_style_flag ^= FLAG_SHOW_AXES; break;
-	case 'p': m_style_flag ^= FLAG_SHOW_PLANE; break;
-	case 'b': m_style_flag ^= FLAG_SHOW_AABB; break;
+		case 's': m_style_flag ^= FLAG_SHOW_SOLID; break;
+		case 'w': m_style_flag ^= FLAG_SHOW_WIRE; break;
+		case 'n': m_style_flag ^= FLAG_SHOW_NORMALS; break;
+		case 'a': m_style_flag ^= FLAG_SHOW_AXES; break;
+		case 'p': m_style_flag ^= FLAG_SHOW_PLANE; break;
+		case 'b': m_style_flag ^= FLAG_SHOW_AABB; break;
 	}
 }
 
@@ -120,12 +108,15 @@ void Mesh3DScene::draw()
 	if (m_style_flag & FLAG_SHOW_NORMALS) m_model.draw(Colour::black, NORMALS);
 	if (m_style_flag & FLAG_SHOW_AXES) m_model.draw(Colour::black, AXES);
 
-	 
+	//! Draw AABB
+	if (m_style_flag & FLAG_SHOW_AABB) {
+		m_aabb.setColour(Colour::black);
+		m_aabb.setTransparency(1);
+		m_aabb.draw();
+	}
 
 	//! Draw center mass
 	Point3D(m_center_mass.x, m_center_mass.y, m_center_mass.z, Colour::red).draw();
-
-	 
 
 	//! Draw intersecting triangles of model
 	vector<vvr::Triangle> &triangles = m_model.getTriangles();
@@ -138,6 +129,25 @@ void Mesh3DScene::draw()
 			Colour::green);
 		t3d.draw();
 	}
+}
+
+
+void getMeshAABB(std::vector<vec>& vertices, vvr::Box3D& aabb) {
+	double min_x, min_y, min_z, max_x, max_y, max_z;
+	min_x = max_x = vertices[0].x;
+	min_y = max_y = vertices[0].y;
+	min_z = max_z = vertices[0].z;
+
+	for each (auto vertex in vertices) {
+		if (vertex.x < min_x) min_x = vertex.x;
+		if (vertex.y < min_y) min_y = vertex.y;
+		if (vertex.z < min_z) min_z = vertex.z;
+
+		if (vertex.x > max_x) max_x = vertex.x;
+		if (vertex.y > max_y) max_y = vertex.y;
+		if (vertex.z > max_z) max_z = vertex.z;
+	}
+	aabb = Box3D(min_x, min_y, min_z, max_x, max_y, max_z);
 }
  
 
@@ -154,48 +164,6 @@ int main(int argc, char* argv[])
 	{
 		cerr << "Unknown exception" << endl;
 		return 1;
-	}
-}
-
-//! LAB Tasks
-
-void Task_1_FindCenterMass(vector<vec> &vertices, vec &cm)
-{
-	//!//////////////////////////////////////////////////////////////////////////////////
-	//! TASK:
-	//!
-	//!  - Breite to kentro mazas twn simeiwn `vertices`.
-	//!  - Apothikeyste to apotelesma stin metavliti `cm`.
-	//!
-	//!//////////////////////////////////////////////////////////////////////////////////
-
- 
-
-	float x = 0;
-	float y = 0;
-	float z = 0;
-	int size = vertices.size();
-	for (int i = 0; i < vertices.size(); i++) {
-		x = x + vertices[i].x;
-		y = y + vertices[i].y;
-		z = z + vertices[i].z;
-
-	}
-	cm.x = x / float(size);
-	cm.z = z / float(size);
-	cm.y = y / float(size);
-}
- 
- 
-void Task_2_Erase_Tria(std::vector<vvr::Triangle> &triangles)
-{
-	for (int i = 0; i < triangles.size(); i = i + 5) {
-
-		triangles.erase(triangles.begin() + i);
-		i--;
-
-
-
 	}
 }
 
