@@ -14,8 +14,12 @@ Mesh3DScene::Mesh3DScene()
 	m_bg_col = Colour("768E77");
 	m_obj_col = Colour("454545");
 	const string objDir = getBasePath() + "resources/obj/";
-	const string objFile = objDir + "vvrlab.obj";
-	m_model_original = vvr::Mesh(objFile);
+	// Load model A
+	const string objFile_A = objDir + "suzanne.obj";
+	m_model_original_A = vvr::Mesh(objFile_A);
+	// Load model B
+	const string objFile_B = objDir + "armadillo_low_low.obj";
+	m_model_original_B = vvr::Mesh(objFile_B);
 	reset();
 }
 
@@ -45,9 +49,16 @@ void Mesh3DScene::resize()
 
 	if (first_pass)
 	{
-		m_model_original.setBigSize(getSceneWidth() / 2);
-		m_model_original.update();
-		m_model = m_model_original;
+		// Setup model A
+		m_model_original_A.setBigSize(getSceneWidth() / 2);
+		m_model_original_A.update();
+		m_model_A = m_model_original_A;
+
+		// Setup model B
+		m_model_original_B.setBigSize(getSceneWidth() / 2);
+		m_model_original_B.update();
+		m_model_B = m_model_original_B;
+
 		Tasks();
 		first_pass = false;
 	}
@@ -58,7 +69,8 @@ void Mesh3DScene::Tasks()
 	m_center_mass = vec(-10, 0, 0);
 
 	// Calculate AABB for the 2 loaded models
-	getMeshAABB(m_model_original.getVertices(), m_aabb);
+	getMeshAABB(m_model_A.getVertices(), m_aabb_A);
+	getMeshAABB(m_model_B.getVertices(), m_aabb_B);
 
 }
 
@@ -103,23 +115,36 @@ void Mesh3DScene::draw()
 		math2vvr(math::Triangle(p2, p1, p3), colPlane).draw();
 	}
 
-	if (m_style_flag & FLAG_SHOW_SOLID) m_model.draw(m_obj_col, SOLID);
-	if (m_style_flag & FLAG_SHOW_WIRE) m_model.draw(Colour::black, WIRE);
-	if (m_style_flag & FLAG_SHOW_NORMALS) m_model.draw(Colour::black, NORMALS);
-	if (m_style_flag & FLAG_SHOW_AXES) m_model.draw(Colour::black, AXES);
+	// Draw models
+	if (m_style_flag & FLAG_SHOW_SOLID) {
+		m_model_A.draw(m_obj_col, SOLID);
+		m_model_B.draw(m_obj_col, SOLID);
+	}
+	if (m_style_flag & FLAG_SHOW_WIRE) {
+		m_model_A.draw(Colour::black, WIRE);
+		m_model_B.draw(Colour::black, WIRE);
+	}
+	if (m_style_flag & FLAG_SHOW_NORMALS) {
+		m_model_A.draw(Colour::black, NORMALS);
+		m_model_B.draw(Colour::black, NORMALS);
+	}
+	if (m_style_flag & FLAG_SHOW_AXES) {
+		m_model_A.draw(Colour::black, AXES);
+		m_model_B.draw(Colour::black, AXES);
+	}
 
 	//! Draw AABB
 	if (m_style_flag & FLAG_SHOW_AABB) {
-		m_aabb.setColour(Colour::black);
-		m_aabb.setTransparency(1);
-		m_aabb.draw();
+		m_aabb_A.setColour(Colour::black);
+		m_aabb_A.setTransparency(1);
+		m_aabb_A.draw();
 	}
 
 	//! Draw center mass
 	Point3D(m_center_mass.x, m_center_mass.y, m_center_mass.z, Colour::red).draw();
 
 	//! Draw intersecting triangles of model
-	vector<vvr::Triangle> &triangles = m_model.getTriangles();
+	vector<vvr::Triangle> &triangles = m_model_A.getTriangles();
 	for (int i = 0; i < m_intersections.size(); i++) {
 		vvr::Triangle &t = triangles[m_intersections[i]];
 		Triangle3D t3d(

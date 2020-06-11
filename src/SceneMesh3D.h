@@ -42,11 +42,17 @@ private:
 	float m_plane_d;
 	vvr::Canvas2D m_canvas;
 	vvr::Colour m_obj_col;
-	vvr::Mesh m_model_original, m_model;
-	vvr::Box3D m_aabb;
 	math::vec m_center_mass;
 	math::vec m_pca_cen;
 	math::vec m_pca_dir;
 	math::Plane m_plane;
 	std::vector<int> m_intersections;
+
+	// Model A
+	vvr::Mesh m_model_original_A, m_model_A;
+	vvr::Box3D m_aabb_A;
+
+	// Model B
+	vvr::Mesh m_model_original_B, m_model_B;
+	vvr::Box3D m_aabb_B;
 };
