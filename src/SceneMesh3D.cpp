@@ -133,11 +133,15 @@ void Mesh3DScene::draw()
 		m_model_B.draw(Colour::black, AXES);
 	}
 
-	//! Draw AABB
+	//! Draw AABB of the 2 loaded models
 	if (m_style_flag & FLAG_SHOW_AABB) {
 		m_aabb_A.setColour(Colour::black);
 		m_aabb_A.setTransparency(1);
 		m_aabb_A.draw();
+
+		m_aabb_B.setColour(Colour::red);
+		m_aabb_B.setTransparency(1);
+		m_aabb_B.draw();
 	}
 
 	//! Draw center mass
