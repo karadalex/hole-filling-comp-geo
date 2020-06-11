@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(SOLUTIONTITLE ConvexHull CACHE TYPE STRING)
+set(SOLUTIONTITLE HoleFilling CACHE TYPE STRING)
 project(${SOLUTIONTITLE})
 file(GLOB FILES_SRC
     "src/*.cpp"
