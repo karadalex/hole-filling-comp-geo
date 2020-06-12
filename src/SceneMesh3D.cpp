@@ -7,12 +7,18 @@ using namespace vvr;
 
 Mesh3DScene::Mesh3DScene()
 {
-	//! Load settings.
+	// Load Scene settings.
 	vvr::Shape::DEF_LINE_WIDTH = 4;
 	vvr::Shape::DEF_POINT_SIZE = 10;
 	m_perspective_proj = true;
 	m_bg_col = Colour("768E77");
 	m_obj_col = Colour("454545");
+	m_perspective_proj = true;
+	m_hide_log = false;
+	m_hide_sliders = true;
+	m_fullscreen = false;
+
+	// Load models
 	const string objDir = getBasePath() + "resources/obj/";
 	// Load model A
 	const string objFile_A = objDir + "suzanne.obj";
@@ -20,6 +26,7 @@ Mesh3DScene::Mesh3DScene()
 	// Load model B
 	const string objFile_B = objDir + "armadillo_low_low.obj";
 	m_model_original_B = vvr::Mesh(objFile_B);
+
 	reset();
 }
 
@@ -78,11 +85,13 @@ void Mesh3DScene::arrowEvent(ArrowDir dir, int modif)
 		math::float3* translation = new math::float3(-0.5, 0, 0);
 		m_model_B.move(*translation);
 		getMeshAABB(m_model_B.getVertices(), m_aabb_B);
+		cout << checkBoxCollision(m_aabb_A, m_aabb_B) << endl;
 	}
 	else if (dir == RIGHT) {
 		math::float3* translation = new math::float3(0.5, 0, 0);
 		m_model_B.move(*translation);
 		getMeshAABB(m_model_B.getVertices(), m_aabb_B);
+		cout << checkBoxCollision(m_aabb_A, m_aabb_B) << endl;
 	}
 }
 
@@ -165,6 +174,14 @@ void getMeshAABB(std::vector<vec>& vertices, vvr::Box3D& aabb) {
 		if (vertex.z > max_z) max_z = vertex.z;
 	}
 	aabb = Box3D(min_x, min_y, min_z, max_x, max_y, max_z);
+}
+
+
+bool checkBoxCollision(vvr::Box3D box1, vvr::Box3D box2) {
+	if (box1.x1 > box2.x2 || box1.x2 < box2.x1) return false;
+	if (box1.y1 > box2.y2 || box1.y2 < box2.y1) return false;
+	if (box1.z1 > box2.z2 || box1.z2 < box2.z1) return false;
+	return true;
 }
  
 
