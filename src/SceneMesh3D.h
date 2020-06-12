@@ -15,8 +15,7 @@
 #define FLAG_SHOW_WIRE       2
 #define FLAG_SHOW_SOLID      4
 #define FLAG_SHOW_NORMALS    8
-#define FLAG_SHOW_PLANE     16
-#define FLAG_SHOW_AABB      32
+#define FLAG_SHOW_AABB      16
 
 
 void getMeshAABB(std::vector<vec>& vertices, vvr::Box3D& aabb);
@@ -39,13 +38,11 @@ private:
 
 private:
 	int m_style_flag;
-	float m_plane_d;
 	vvr::Canvas2D m_canvas;
 	vvr::Colour m_obj_col;
 	math::vec m_center_mass;
 	math::vec m_pca_cen;
 	math::vec m_pca_dir;
-	math::Plane m_plane;
 	std::vector<int> m_intersections;
 
 	// Model A

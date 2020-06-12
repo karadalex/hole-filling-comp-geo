@@ -27,17 +27,12 @@ void Mesh3DScene::reset()
 {
 	Scene::reset();
 
-	//! Define plane
-	m_plane_d = 0;
-	m_plane = Plane(vec(0, 1, 1).Normalized(), m_plane_d);
-
 	//! Define what will be vissible by default
 	m_style_flag = 0;
 	m_style_flag |= FLAG_SHOW_SOLID;
 	m_style_flag |= FLAG_SHOW_WIRE;
 	m_style_flag |= FLAG_SHOW_AXES;
 	m_style_flag |= FLAG_SHOW_AABB;
-	//m_style_flag |= FLAG_SHOW_PLANE;
 }
 
 void Mesh3DScene::resize()
@@ -76,13 +71,19 @@ void Mesh3DScene::Tasks()
 
 void Mesh3DScene::arrowEvent(ArrowDir dir, int modif)
 {
-	math::vec n = m_plane.normal;
-	if (dir == UP) m_plane_d += 1;
-	if (dir == DOWN) m_plane_d -= 1;
-	else if (dir == LEFT) n = math::float3x3::RotateY(DegToRad(1)).Transform(n);
-	else if (dir == RIGHT) n = math::float3x3::RotateY(DegToRad(-1)).Transform(n);
-	m_plane = Plane(n.Normalized(), m_plane_d);
- 
+	if (dir == UP) {}
+	if (dir == DOWN) {}
+	// Move model B left or right and recalculate the AABB
+	else if (dir == LEFT) {
+		math::float3* translation = new math::float3(-0.5, 0, 0);
+		m_model_B.move(*translation);
+		getMeshAABB(m_model_B.getVertices(), m_aabb_B);
+	}
+	else if (dir == RIGHT) {
+		math::float3* translation = new math::float3(0.5, 0, 0);
+		m_model_B.move(*translation);
+		getMeshAABB(m_model_B.getVertices(), m_aabb_B);
+	}
 }
 
 void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
@@ -96,25 +97,12 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 		case 'w': m_style_flag ^= FLAG_SHOW_WIRE; break;
 		case 'n': m_style_flag ^= FLAG_SHOW_NORMALS; break;
 		case 'a': m_style_flag ^= FLAG_SHOW_AXES; break;
-		case 'p': m_style_flag ^= FLAG_SHOW_PLANE; break;
 		case 'b': m_style_flag ^= FLAG_SHOW_AABB; break;
 	}
 }
 
 void Mesh3DScene::draw()
 {
-	//! Draw plane
-	if (m_style_flag & FLAG_SHOW_PLANE) {
-		vvr::Colour colPlane(0x41, 0x14, 0xB3);
-		float u = 20, v = 20;
-		math::vec p0(m_plane.Point(-u, -v, math::vec(0, 0, 0)));
-		math::vec p1(m_plane.Point(-u, v, math::vec(0, 0, 0)));
-		math::vec p2(m_plane.Point(u, -v, math::vec(0, 0, 0)));
-		math::vec p3(m_plane.Point(u, v, math::vec(0, 0, 0)));
-		math2vvr(math::Triangle(p0, p1, p2), colPlane).draw();
-		math2vvr(math::Triangle(p2, p1, p3), colPlane).draw();
-	}
-
 	// Draw models
 	if (m_style_flag & FLAG_SHOW_SOLID) {
 		m_model_A.draw(m_obj_col, SOLID);
