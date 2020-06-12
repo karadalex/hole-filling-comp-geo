@@ -20,9 +20,12 @@
 
 void getMeshAABB(std::vector<vec>& vertices, vvr::Box3D& aabb);
 bool checkBoxCollision(vvr::Box3D box1, vvr::Box3D box2);
-bool checkTriangleCollision(vvr::Triangle tri1, vvr::Triangle tri2);
+bool checkTriangleCollision3D(vvr::Triangle tri1, vvr::Triangle tri2);
+bool checkTriangleCollision2D(C2DTriangle tri1, C2DTriangle tri2);
 
-class Mesh3DScene : public vvr::Scene
+struct Tri;
+
+class Mesh3DScene : public vvr::Scene 
 {
 public:
 	Mesh3DScene();
@@ -53,3 +56,4 @@ private:
 	vvr::Mesh m_model_original_B, m_model_B;
 	vvr::Box3D m_aabb_B;
 };
+

@@ -84,11 +84,33 @@ void Mesh3DScene::arrowEvent(ArrowDir dir, int modif)
 	if (dir == DOWN) translation = new math::float3(0, -0.5, 0);
 	else if (dir == LEFT) translation = new math::float3(-0.5, 0, 0);
 	else if (dir == RIGHT) translation = new math::float3(0.5, 0, 0);
-
 	m_model_B.move(*translation);
-	getMeshAABB(m_model_B.getVertices(), m_aabb_B);
-	if (checkBoxCollision(m_aabb_A, m_aabb_B)) cout << "AABBs are in collision" << endl;
+
+	vector<vvr::Triangle>& trianglesA = m_model_A.getTriangles();
+	vector<vvr::Triangle>& trianglesB = m_model_B.getTriangles();
+	m_intersections.clear();
+	// Check for model collisions
+	if (checkBoxCollision(m_aabb_A, m_aabb_B)) {
+		cout << "AABBs are in collision" << endl;
+		for (int i = 0; i < trianglesA.size(); i++) {
+			vvr::Triangle triA = trianglesA.at(i);
+
+			for (int j = 0; j < trianglesB.size(); j++) {
+				vvr::Triangle triB = trianglesB.at(j);
+
+				if (checkTriangleCollision3D(triA, triB)) {
+					m_intersections.push_back(i);
+					break;
+				}
+			}
+		}
+		//vvr::Triangle triA = m_model_A.getTriangles().at(0);
+		//vvr::Triangle triB = m_model_A.getTriangles().at(0);
+		//checkTriangleCollision3D(triA, triB);
+		//m_intersections.push_back(1);
+	}
 	else cout << "AABBs are not in collision" << endl;
+
 }
 
 void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
@@ -126,6 +148,9 @@ void Mesh3DScene::draw()
 		m_model_B.draw(Colour::black, AXES);
 	}
 
+	// Recalculate model B AABB because it is free to move and thus AABB is changed
+	getMeshAABB(m_model_B.getVertices(), m_aabb_B);
+
 	//! Draw AABB of the 2 loaded models
 	if (m_style_flag & FLAG_SHOW_AABB) {
 		m_aabb_A.setColour(Colour::black);
@@ -137,13 +162,38 @@ void Mesh3DScene::draw()
 		m_aabb_B.draw();
 	}
 
+	// Models' triangles
+	vector<vvr::Triangle>& trianglesA = m_model_A.getTriangles();
+	vector<vvr::Triangle>& trianglesB = m_model_B.getTriangles();
+
+	// Check for model collisions
+	//if (checkBoxCollision(m_aabb_A, m_aabb_B)) {
+	//	cout << "AABBs are in collision" << endl;
+	//	for (int i = 0; i < trianglesA.size(); i++) {
+	//		vvr::Triangle triA = trianglesA.at(i);
+
+	//		for (int j = 0; j < trianglesB.size(); j++) {
+	//			vvr::Triangle triB = trianglesB.at(j);
+
+	//			if (checkTriangleCollision3D(triA, triB)) {
+	//				m_intersections.push_back(i);
+	//				break;
+	//			}
+	//		}
+	//	}
+	//	//vvr::Triangle triA = m_model_A.getTriangles().at(0);
+	//	//vvr::Triangle triB = m_model_A.getTriangles().at(0);
+	//	//checkTriangleCollision3D(triA, triB);
+	//	//m_intersections.push_back(1);
+	//}
+	//else cout << "AABBs are not in collision" << endl;
+
 	//! Draw center mass
 	Point3D(m_center_mass.x, m_center_mass.y, m_center_mass.z, Colour::red).draw();
 
 	//! Draw intersecting triangles of model
-	vector<vvr::Triangle> &triangles = m_model_A.getTriangles();
 	for (int i = 0; i < m_intersections.size(); i++) {
-		vvr::Triangle &t = triangles[m_intersections[i]];
+		vvr::Triangle &t = trianglesA[m_intersections[i]];
 		Triangle3D t3d(
 			t.v1().x, t.v1().y, t.v1().z,
 			t.v2().x, t.v2().y, t.v2().z,
@@ -177,6 +227,40 @@ bool checkBoxCollision(vvr::Box3D box1, vvr::Box3D box2) {
 	if (box1.x1 > box2.x2 || box1.x2 < box2.x1) return false;
 	if (box1.y1 > box2.y2 || box1.y2 < box2.y1) return false;
 	if (box1.z1 > box2.z2 || box1.z2 < box2.z1) return false;
+	return true;
+}
+
+
+bool checkTriangleCollision3D(vvr::Triangle tri1, vvr::Triangle tri2) {
+	math::Triangle _tri1, _tri2;
+	_tri1 = math::Triangle(tri1.v1(), tri1.v2(), tri1.v3());
+	_tri2 = math::Triangle(tri2.v1(), tri2.v2(), tri2.v3());
+	return _tri1.Intersects(_tri2);
+
+	// Custom implementation - TODO
+	//C2DTriangle tri1_2D, tri2_2D;
+	//int collisionInProj = 0;
+	//// XY Projected triangles - collicion check
+	//tri1_2D = C2DTriangle(C2DPoint(tri1.v1().x, tri1.v1().y), C2DPoint(tri1.v2().x, tri1.v2().y), C2DPoint(tri1.v3().x, tri1.v3().y));
+	//tri2_2D = C2DTriangle(C2DPoint(tri2.v1().x, tri2.v1().y), C2DPoint(tri2.v2().x, tri2.v2().y), C2DPoint(tri2.v3().x, tri2.v3().y));
+	//collisionInProj += checkTriangleCollision2D(tri1_2D, tri2_2D);
+
+	//// XZ Projected triangles - collicion check
+	//tri1_2D = C2DTriangle(C2DPoint(tri1.v1().x, tri1.v1().z), C2DPoint(tri1.v2().x, tri1.v2().z), C2DPoint(tri1.v3().x, tri1.v3().z));
+	//tri2_2D = C2DTriangle(C2DPoint(tri2.v1().x, tri2.v1().z), C2DPoint(tri2.v2().x, tri2.v2().z), C2DPoint(tri2.v3().x, tri2.v3().z));
+	//collisionInProj += checkTriangleCollision2D(tri1_2D, tri2_2D);
+
+	//// YZ Projected triangles - collicion check
+	//tri1_2D = C2DTriangle(C2DPoint(tri1.v1().y, tri1.v1().z), C2DPoint(tri1.v2().y, tri1.v2().z), C2DPoint(tri1.v3().y, tri1.v3().z));
+	//tri2_2D = C2DTriangle(C2DPoint(tri2.v1().y, tri2.v1().z), C2DPoint(tri2.v2().y, tri2.v2().z), C2DPoint(tri2.v3().y, tri2.v3().z));
+	//collisionInProj += checkTriangleCollision2D(tri1_2D, tri2_2D);
+
+	//cout << collisionInProj << endl;
+
+	//return true;
+}
+
+bool checkTriangleCollision2D(C2DTriangle tri1, C2DTriangle tri2) {
 	return true;
 }
  
