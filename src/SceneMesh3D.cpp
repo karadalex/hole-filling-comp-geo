@@ -78,21 +78,17 @@ void Mesh3DScene::Tasks()
 
 void Mesh3DScene::arrowEvent(ArrowDir dir, int modif)
 {
-	if (dir == UP) {}
-	if (dir == DOWN) {}
-	// Move model B left or right and recalculate the AABB
-	else if (dir == LEFT) {
-		math::float3* translation = new math::float3(-0.5, 0, 0);
-		m_model_B.move(*translation);
-		getMeshAABB(m_model_B.getVertices(), m_aabb_B);
-		cout << checkBoxCollision(m_aabb_A, m_aabb_B) << endl;
-	}
-	else if (dir == RIGHT) {
-		math::float3* translation = new math::float3(0.5, 0, 0);
-		m_model_B.move(*translation);
-		getMeshAABB(m_model_B.getVertices(), m_aabb_B);
-		cout << checkBoxCollision(m_aabb_A, m_aabb_B) << endl;
-	}
+	// Move model B up, down, left or right and recalculate the AABB
+	math::float3* translation;
+	if (dir == UP) translation = new math::float3(0, 0.5, 0);
+	if (dir == DOWN) translation = new math::float3(0, -0.5, 0);
+	else if (dir == LEFT) translation = new math::float3(-0.5, 0, 0);
+	else if (dir == RIGHT) translation = new math::float3(0.5, 0, 0);
+
+	m_model_B.move(*translation);
+	getMeshAABB(m_model_B.getVertices(), m_aabb_B);
+	if (checkBoxCollision(m_aabb_A, m_aabb_B)) cout << "AABBs are in collision" << endl;
+	else cout << "AABBs are not in collision" << endl;
 }
 
 void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
