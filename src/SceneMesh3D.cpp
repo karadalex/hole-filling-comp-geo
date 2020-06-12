@@ -18,13 +18,26 @@ Mesh3DScene::Mesh3DScene()
 	m_hide_sliders = true;
 	m_fullscreen = false;
 
+	
+	for (int i = 0; i < 18; i++) {
+		cout << i+1 << " " << obj_models[i] << endl;
+	}
+	string model_A_file, model_B_file;
+	int indA, indB;
+	cout << "Select file for model A (1-18): " << endl;
+	cin >> indA;
+	cout << "Select file for model B (1-18): " << endl;
+	cin >> indB;
+	model_A_file = obj_models[indA - 1];
+	model_B_file = obj_models[indB - 1];
+
 	// Load models
 	const string objDir = getBasePath() + "resources/obj/";
 	// Load model A
-	const string objFile_A = objDir + "suzanne.obj";
+	const string objFile_A = objDir + model_A_file;
 	m_model_original_A = vvr::Mesh(objFile_A);
 	// Load model B
-	const string objFile_B = objDir + "armadillo_low_low.obj";
+	const string objFile_B = objDir + model_B_file;
 	m_model_original_B = vvr::Mesh(objFile_B);
 
 	reset();

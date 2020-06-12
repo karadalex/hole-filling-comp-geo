@@ -55,5 +55,26 @@ private:
 	// Model B
 	vvr::Mesh m_model_original_B, m_model_B;
 	vvr::Box3D m_aabb_B;
+
+	std::string obj_models[18] = {
+		"armadillo_low_low.obj",
+		"b66_L2.obj",
+		"bone.obj",
+		"bunny_low.obj",
+		"cube.obj",
+		"dolphin.obj",
+		"dragon_low_low.obj",
+		"flashlight.obj",
+		"flashlightNoCentered.obj",
+		"hand2.obj",
+		"icosahedron.obj",
+		"Phone_v02.obj",
+		"pins.obj",
+		"polyhedron.obj",
+		"suzanne.obj",
+		"teapotMultiMesh.obj",
+		"unicorn_low.obj",
+		"unicorn_low_low.obj"
+	};
 };
 
