@@ -137,8 +137,14 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 		case 'a': m_style_flag ^= FLAG_SHOW_AXES; break;
 		case 'b': m_style_flag ^= FLAG_SHOW_AABB; break;
 		case 'h': 
-			show_model_A_with_holes = true;
-			getModelWithHoles(m_intersections, m_model_A);
+			if (show_model_A_with_holes) {
+				show_model_A_with_holes = false;
+				m_model_A = m_model_original_A;
+			}
+			else {
+				show_model_A_with_holes = true;
+				getModelWithHoles(m_intersections, m_model_A);
+			}
 			break;
 	}
 }
@@ -148,19 +154,30 @@ void Mesh3DScene::draw()
 	// Draw models
 	if (m_style_flag & FLAG_SHOW_SOLID) {
 		m_model_A.draw(m_obj_col, SOLID);
-		m_model_B.draw(m_obj_col, SOLID);
 	}
 	if (m_style_flag & FLAG_SHOW_WIRE) {
 		m_model_A.draw(Colour::black, WIRE);
-		m_model_B.draw(Colour::black, WIRE);
 	}
 	if (m_style_flag & FLAG_SHOW_NORMALS) {
 		m_model_A.draw(Colour::black, NORMALS);
-		m_model_B.draw(Colour::black, NORMALS);
 	}
 	if (m_style_flag & FLAG_SHOW_AXES) {
 		m_model_A.draw(Colour::black, AXES);
-		m_model_B.draw(Colour::black, AXES);
+	}
+
+	if (!show_model_A_with_holes) {
+		if (m_style_flag & FLAG_SHOW_SOLID) {
+			m_model_B.draw(m_obj_col, SOLID);
+		}
+		if (m_style_flag & FLAG_SHOW_WIRE) {
+			m_model_B.draw(Colour::black, WIRE);
+		}
+		if (m_style_flag & FLAG_SHOW_NORMALS) {
+			m_model_B.draw(Colour::black, NORMALS);
+		}
+		if (m_style_flag & FLAG_SHOW_AXES) {
+			m_model_B.draw(Colour::black, AXES);
+		}
 	}
 
 	// Recalculate model B AABB because it is free to move and thus AABB is changed
@@ -172,9 +189,11 @@ void Mesh3DScene::draw()
 		m_aabb_A.setTransparency(1);
 		m_aabb_A.draw();
 
-		m_aabb_B.setColour(Colour::red);
-		m_aabb_B.setTransparency(1);
-		m_aabb_B.draw();
+		if (!show_model_A_with_holes) {
+			m_aabb_B.setColour(Colour::red);
+			m_aabb_B.setTransparency(1);
+			m_aabb_B.draw();
+		}
 	}
 
 	// Models' triangles
@@ -258,8 +277,6 @@ bool checkTriangleCollision2D(C2DTriangle tri1, C2DTriangle tri2) {
 }
 
 void getModelWithHoles(std::vector<int>& intersections, vvr::Mesh& mesh) {
-	printVector(intersections, "modelIntersections");
-
 	vvr::Mesh original_mesh = mesh;
 	mesh = *(new Mesh());
 	
