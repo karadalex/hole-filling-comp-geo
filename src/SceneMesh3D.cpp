@@ -40,6 +40,8 @@ Mesh3DScene::Mesh3DScene()
 	const string objFile_B = objDir + model_B_file;
 	m_model_original_B = vvr::Mesh(objFile_B);
 
+	show_model_A_with_holes = false;
+
 	reset();
 }
 
@@ -117,10 +119,6 @@ void Mesh3DScene::arrowEvent(ArrowDir dir, int modif)
 				}
 			}
 		}
-		//vvr::Triangle triA = m_model_A.getTriangles().at(0);
-		//vvr::Triangle triB = m_model_A.getTriangles().at(0);
-		//checkTriangleCollision3D(triA, triB);
-		//m_intersections.push_back(1);
 	}
 	else cout << "AABBs are not in collision" << endl;
 
@@ -138,6 +136,10 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 		case 'n': m_style_flag ^= FLAG_SHOW_NORMALS; break;
 		case 'a': m_style_flag ^= FLAG_SHOW_AXES; break;
 		case 'b': m_style_flag ^= FLAG_SHOW_AABB; break;
+		case 'h': 
+			show_model_A_with_holes = true;
+			getModelWithHoles(m_intersections, m_model_A);
+			break;
 	}
 }
 
@@ -179,34 +181,12 @@ void Mesh3DScene::draw()
 	vector<vvr::Triangle>& trianglesA = m_model_A.getTriangles();
 	vector<vvr::Triangle>& trianglesB = m_model_B.getTriangles();
 
-	// Check for model collisions
-	//if (checkBoxCollision(m_aabb_A, m_aabb_B)) {
-	//	cout << "AABBs are in collision" << endl;
-	//	for (int i = 0; i < trianglesA.size(); i++) {
-	//		vvr::Triangle triA = trianglesA.at(i);
-
-	//		for (int j = 0; j < trianglesB.size(); j++) {
-	//			vvr::Triangle triB = trianglesB.at(j);
-
-	//			if (checkTriangleCollision3D(triA, triB)) {
-	//				m_intersections.push_back(i);
-	//				break;
-	//			}
-	//		}
-	//	}
-	//	//vvr::Triangle triA = m_model_A.getTriangles().at(0);
-	//	//vvr::Triangle triB = m_model_A.getTriangles().at(0);
-	//	//checkTriangleCollision3D(triA, triB);
-	//	//m_intersections.push_back(1);
-	//}
-	//else cout << "AABBs are not in collision" << endl;
-
 	//! Draw center mass
 	Point3D(m_center_mass.x, m_center_mass.y, m_center_mass.z, Colour::red).draw();
 
 	//! Draw intersecting triangles of model
 	for (int i = 0; i < m_intersections.size(); i++) {
-		vvr::Triangle &t = trianglesA[m_intersections[i]];
+		vvr::Triangle &t = trianglesA.at(m_intersections[i]);
 		Triangle3D t3d(
 			t.v1().x, t.v1().y, t.v1().z,
 			t.v2().x, t.v2().y, t.v2().z,
@@ -275,6 +255,50 @@ bool checkTriangleCollision3D(vvr::Triangle tri1, vvr::Triangle tri2) {
 
 bool checkTriangleCollision2D(C2DTriangle tri1, C2DTriangle tri2) {
 	return true;
+}
+
+void getModelWithHoles(std::vector<int>& intersections, vvr::Mesh& mesh) {
+	printVector(intersections, "modelIntersections");
+
+	vvr::Mesh original_mesh = mesh;
+	mesh = *(new Mesh());
+	
+	std::vector<vvr::Triangle>& original_triangles = original_mesh.getTriangles();
+	std::vector<vec>& original_vertices = original_mesh.getVertices();
+	std::vector<vvr::Triangle>& new_triangles = mesh.getTriangles();
+	std::vector<vec>& new_vertices = mesh.getVertices();
+
+	for (int i = 0; i < original_vertices.size(); i++) {
+		vec v = original_vertices.at(i);
+		new_vertices.push_back(v);
+	}
+
+	int k = 0;  // Intersections index. Intersections array is assumed sorted
+	int intersections_num = intersections.size();
+	for (int i = 0; i < original_triangles.size(); i++) {
+		bool can_add_new_triangle = true;
+		if (k < intersections_num)
+			if (i == intersections.at(k)) {
+				can_add_new_triangle = false;
+				k++;
+			}
+
+		if (can_add_new_triangle) {
+			vvr::Triangle orig_tri = original_triangles.at(i);
+			new_triangles.push_back(vvr::Triangle(&new_vertices, orig_tri.vi1, orig_tri.vi2, orig_tri.vi3));
+		}
+	}
+
+	intersections.clear();
+}
+
+
+void printVector(std::vector<int> vec, string vec_name) {
+	cout << vec_name << " = ";
+	for (int i = 0; i < vec.size(); i++) {
+		cout << vec.at(i) << " ";
+	}
+	cout << endl;
 }
  
 
