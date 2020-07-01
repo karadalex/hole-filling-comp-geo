@@ -41,6 +41,7 @@ Mesh3DScene::Mesh3DScene()
 	m_model_original_B = vvr::Mesh(objFile_B);
 
 	show_model_A_with_holes = false;
+	show_model_A_boundaries = false;
 
 	reset();
 }
@@ -143,8 +144,12 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			}
 			else {
 				show_model_A_with_holes = true;
-				getModelWithHoles(m_intersections, m_model_A);
+				getModelWithHoles(m_intersections, m_model_A, m_removed_triangles);
 			}
+			break;
+		case 'e':
+			getModelBoundaryVertices(m_removed_triangles, boundaryA_vertices);
+			show_model_A_boundaries = !show_model_A_boundaries;
 			break;
 	}
 }
@@ -180,6 +185,8 @@ void Mesh3DScene::draw()
 		}
 	}
 
+	if (show_model_A_boundaries) drawBoundaries();
+
 	// Recalculate model B AABB because it is free to move and thus AABB is changed
 	getMeshAABB(m_model_B.getVertices(), m_aabb_B);
 
@@ -212,6 +219,16 @@ void Mesh3DScene::draw()
 			t.v3().x, t.v3().y, t.v3().z,
 			Colour::green);
 		t3d.draw();
+	}
+}
+
+
+void Mesh3DScene::drawBoundaries() {
+	std::vector<vec>& model_A_vertices = m_model_A.getVertices();
+	cout << "boundaryA_vertices = " << boundaryA_vertices.size() << endl;
+	for each (int v_ind in boundaryA_vertices) {
+		vec v = model_A_vertices.at(v_ind);
+		Point3D(v.x, v.y, v.z, Colour::magenta).draw();
 	}
 }
 
@@ -276,7 +293,9 @@ bool checkTriangleCollision2D(C2DTriangle tri1, C2DTriangle tri2) {
 	return true;
 }
 
-void getModelWithHoles(std::vector<int>& intersections, vvr::Mesh& mesh) {
+void getModelWithHoles(std::vector<int>& intersections, vvr::Mesh& mesh, std::vector<vvr::Triangle>& removed_triangles) {
+	removed_triangles.clear();
+
 	vvr::Mesh original_mesh = mesh;
 	mesh = *(new Mesh());
 	
@@ -300,9 +319,12 @@ void getModelWithHoles(std::vector<int>& intersections, vvr::Mesh& mesh) {
 				k++;
 			}
 
+		vvr::Triangle orig_tri = original_triangles.at(i);
 		if (can_add_new_triangle) {
-			vvr::Triangle orig_tri = original_triangles.at(i);
 			new_triangles.push_back(vvr::Triangle(&new_vertices, orig_tri.vi1, orig_tri.vi2, orig_tri.vi3));
+		}
+		else {
+			removed_triangles.push_back(vvr::Triangle(&new_vertices, orig_tri.vi1, orig_tri.vi2, orig_tri.vi3));
 		}
 	}
 
@@ -316,6 +338,30 @@ void printVector(std::vector<int> vec, string vec_name) {
 		cout << vec.at(i) << " ";
 	}
 	cout << endl;
+}
+
+
+void getModelBoundaryVertices(vector<vvr::Triangle> removedTriangles, vector<int>& boundary_vertex_indices) {
+	boundary_vertex_indices.clear();
+	for (int i = 0; i < removedTriangles.size()-1; i++) {
+		vvr::Triangle tri = removedTriangles.at(i);
+		// Add boundary vertices to list only once
+		if (find(boundary_vertex_indices.begin(), boundary_vertex_indices.end(), tri.vi1) == boundary_vertex_indices.end())
+			boundary_vertex_indices.push_back(tri.vi1);
+		if (find(boundary_vertex_indices.begin(), boundary_vertex_indices.end(), tri.vi2) == boundary_vertex_indices.end())
+			boundary_vertex_indices.push_back(tri.vi2);
+		if (find(boundary_vertex_indices.begin(), boundary_vertex_indices.end(), tri.vi3) == boundary_vertex_indices.end())
+			boundary_vertex_indices.push_back(tri.vi3);
+	}
+}
+
+
+bool checkCommonEdge(vec v1, vec v2, vvr::Triangle other_tri) {
+	//cout << vi1 << " " << vi2 << " " << other_tri.vi1 << " " << other_tri.vi2 << " " << other_tri.vi3 << endl;
+	return ((v1.Equals(other_tri.v1()) && v2.Equals(other_tri.v2())) || (v1.Equals(other_tri.v2()) && v2.Equals(other_tri.v1())) // other_tri: v1v2 or v2v1
+		|| (v1.Equals(other_tri.v2()) && v2.Equals(other_tri.v3())) || (v1.Equals(other_tri.v3() )&& v2.Equals(other_tri.v2())) // other_tri: v2v3 or v3v2
+		|| (v1.Equals(other_tri.v1()) && v2.Equals(other_tri.v3())) || (v1.Equals(other_tri.v3() )&& v2.Equals(other_tri.v1())) // other_tri: v1v3 or v3v1
+		);
 }
  
 
