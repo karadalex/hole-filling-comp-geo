@@ -12,7 +12,8 @@ Hole Filing
 - `b`: show AABBs of models
 - `h`: Show holes in model A created from intersections with model B
 - `e`: show model edges/boundaries
-- `f`: simple mesh filling / simple triangulation
-- `l`: mesh filling with laplacian mesh processing
+- `t`: mesh filling with trivial triangulation
+- `f`: mesh filling with distance-aware triangulation
+- `l`: mesh filling with geometry-aware triangulation (laplacian mesh processing)
 - `d`: improve mesh density
 - `m`: mesh smoothinh

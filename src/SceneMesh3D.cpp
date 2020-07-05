@@ -163,6 +163,10 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			//detectAndGetModelBoundaryVertices(unique_tris_A, boundaryA_vertices);
 			show_model_A_boundaries = !show_model_A_boundaries;
 			break;
+		case 't':
+			show_filled_triangles = !show_filled_triangles;
+			if (show_filled_triangles) trivialTriangulation(filled_tris_A, boundaryA_vertices, m_model_A.getVertices());
+			break;
 		case 'f':
 			show_filled_triangles = !show_filled_triangles;
 			if (show_filled_triangles) simpleTriangulation(filled_tris_A, boundaryA_vertices, m_model_A.getVertices());
@@ -212,7 +216,7 @@ void Mesh3DScene::draw()
 				v1.x, v1.y, v1.z,
 				v2.x, v2.y, v2.z,
 				v3.x, v3.y, v3.z,
-				Colour::magenta);
+				Colour::orange);
 			t3d.draw();
 		}			
 	}
