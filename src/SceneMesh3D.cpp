@@ -170,6 +170,7 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 		case 'f':
 			show_filled_triangles = !show_filled_triangles;
 			if (show_filled_triangles) simpleTriangulation(filled_tris_A, boundaryA_vertices, m_model_A.getVertices());
+			cout << endl;
 			break;
 	}
 }
