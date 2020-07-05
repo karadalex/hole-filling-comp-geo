@@ -51,6 +51,9 @@ private:
 	// Model A
 	vvr::Mesh m_model_original_A, m_model_A;
 	vvr::Box3D m_aabb_A;
+	std::vector<vec> unique_verts_A;
+	std::vector<int> unique_verts_ind_A;
+	std::vector<vvr::Triangle> unique_tris_A;
 	// List of vertex indices that are on the boundary of the m_model_A
 	std::vector<int> boundaryA_vertices;
 	std::vector<vvr::Triangle> m_removed_triangles;
