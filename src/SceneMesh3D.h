@@ -9,6 +9,9 @@
 #include <string>
 #include <set>
 #include "meshCalculations.h"
+#include "utils.h"
+#include "triangulation.h"
+#include "laplacianMeshProcessing.h"
 
 
 #define FLAG_SHOW_AXES       1
@@ -17,8 +20,6 @@
 #define FLAG_SHOW_NORMALS    8
 #define FLAG_SHOW_AABB      16
 
-
-struct Tri;
 
 class Mesh3DScene : public vvr::Scene 
 {
@@ -53,6 +54,8 @@ private:
 	// List of vertex indices that are on the boundary of the m_model_A
 	std::vector<int> boundaryA_vertices;
 	std::vector<vvr::Triangle> m_removed_triangles;
+	// Adjacency matrix of mesh A
+	SpMat A_adj;
 
 	// Model B
 	vvr::Mesh m_model_original_B, m_model_B;
