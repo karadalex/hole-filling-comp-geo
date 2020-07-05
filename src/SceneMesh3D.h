@@ -8,7 +8,7 @@
 #include <cstring>
 #include <string>
 #include <set>
-#include "symmetriceigensolver3x3.h"
+#include "meshCalculations.h"
 
 
 #define FLAG_SHOW_AXES       1
@@ -17,16 +17,6 @@
 #define FLAG_SHOW_NORMALS    8
 #define FLAG_SHOW_AABB      16
 
-
-void printVector(std::vector<int> vec, std::string vec_name = "vector");
-
-void getMeshAABB(std::vector<vec>& vertices, vvr::Box3D& aabb);
-bool checkBoxCollision(vvr::Box3D box1, vvr::Box3D box2);
-bool checkTriangleCollision3D(vvr::Triangle tri1, vvr::Triangle tri2);
-bool checkTriangleCollision2D(C2DTriangle tri1, C2DTriangle tri2);
-void getModelWithHoles(std::vector<int>& intersections, vvr::Mesh& mesh, std::vector<vvr::Triangle>& removed_triangles);
-void getModelBoundaryVertices(std::vector<vvr::Triangle> removedTriangles, std::vector<int>& boundary_vertex_indices);
-bool checkCommonEdge(vec v1, vec v2, vvr::Triangle other_tri);
 
 struct Tri;
 
