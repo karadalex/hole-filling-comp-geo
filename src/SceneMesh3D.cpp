@@ -43,6 +43,7 @@ Mesh3DScene::Mesh3DScene()
 
 	show_model_A_with_holes = false;
 	show_model_A_boundaries = false;
+	show_filled_triangles = false;
 
 	reset();
 }
@@ -74,8 +75,8 @@ void Mesh3DScene::resize()
 		m_model_original_A.setBigSize(getSceneWidth() / 2);
 		m_model_original_A.update();
 		m_model_A = m_model_original_A;
-		getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
-		getTrianglesWithUniqueVertices(m_model_A.getTriangles(), unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
+		//getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
+		//getTrianglesWithUniqueVertices(m_model_A.getTriangles(), unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
 
 		// Setup model B
 		m_model_original_B.setBigSize(getSceneWidth() / 2);
@@ -153,15 +154,18 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			else {
 				show_model_A_with_holes = true;
 				getModelWithHoles(m_intersections, m_model_A, m_removed_triangles);
-				getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
-				getTrianglesWithUniqueVertices(m_model_A.getTriangles(), unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
-				cout << endl;
+				//getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
+				//getTrianglesWithUniqueVertices(m_model_A.getTriangles(), unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
 			}
 			break;
 		case 'e':
 			getModelBoundaryVertices(m_removed_triangles, boundaryA_vertices);
 			//detectAndGetModelBoundaryVertices(unique_tris_A, boundaryA_vertices);
 			show_model_A_boundaries = !show_model_A_boundaries;
+			break;
+		case 'f':
+			show_filled_triangles = !show_filled_triangles;
+			if (show_filled_triangles) simpleTriangulation(filled_tris_A, boundaryA_vertices, m_model_A.getVertices());
 			break;
 	}
 }
@@ -196,6 +200,21 @@ void Mesh3DScene::draw()
 		if (m_style_flag & FLAG_SHOW_AXES) {
 			m_model_B.draw(Colour::black, AXES);
 		}
+	}
+
+	if (show_filled_triangles) {
+		for (int i = 0; i < filled_tris_A.size(); i++) {
+			vvr::Triangle &t = filled_tris_A.at(i);
+			vec v1 = m_model_A.getVertices().at(t.vi1);
+			vec v2 = m_model_A.getVertices().at(t.vi2);
+			vec v3 = m_model_A.getVertices().at(t.vi3);
+			Triangle3D t3d(
+				v1.x, v1.y, v1.z,
+				v2.x, v2.y, v2.z,
+				v3.x, v3.y, v3.z,
+				Colour::magenta);
+			t3d.draw();
+		}			
 	}
 
 	if (show_model_A_boundaries) drawBoundaries();

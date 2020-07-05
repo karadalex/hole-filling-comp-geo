@@ -40,6 +40,7 @@ private:
 	int m_style_flag;
 	bool show_model_A_with_holes;
 	bool show_model_A_boundaries;
+	bool show_filled_triangles;
 	vvr::Canvas2D m_canvas;
 	vvr::Colour m_obj_col;
 	math::vec m_center_mass;
@@ -57,6 +58,8 @@ private:
 	// List of vertex indices that are on the boundary of the m_model_A
 	std::vector<int> boundaryA_vertices;
 	std::vector<vvr::Triangle> m_removed_triangles;
+	// Triangulation that filled holes
+	std::vector<vvr::Triangle> filled_tris_A;
 	// Adjacency matrix of mesh A
 	SpMat A_adj;
 
