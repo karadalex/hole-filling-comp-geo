@@ -26,3 +26,12 @@ void getAdjacencyMatrix(std::vector<vvr::Triangle> triangles, std::vector<vec> v
 		A.coeffRef(vi3, vi2) = 1;
 	}
 }
+
+
+void getVertexDegreeMatrix(SpMat A, SpMat& D) {
+	int N = A.cols();
+	D = *(new SpMat(N, N));
+
+	for (int i = 0; i < N; i++)
+		D.coeffRef(i,i) = (A.col(i).sum()>0) ? A.col(i).sum() - 1 : 0;
+}

@@ -60,8 +60,8 @@ private:
 	std::vector<vvr::Triangle> m_removed_triangles;
 	// Triangulation that filled holes
 	std::vector<vvr::Triangle> filled_tris_A;
-	// Adjacency matrix of mesh A
-	SpMat A_adj;
+	SpMat A_adj; // Adjacency matrix of mesh A
+	SpMat Vertex_degrees;
 
 	// Model B
 	vvr::Mesh m_model_original_B, m_model_B;

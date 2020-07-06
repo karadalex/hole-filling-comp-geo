@@ -175,6 +175,9 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
 			getTrianglesWithUniqueVertices(m_model_A.getTriangles(), unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
 			getAdjacencyMatrix(unique_tris_A, m_model_A.getVertices(), A_adj);
+			//cout << A_adj << endl;
+			getVertexDegreeMatrix(A_adj, Vertex_degrees);
+			//cout << Vertex_degrees << endl;
 	}
 }
 
