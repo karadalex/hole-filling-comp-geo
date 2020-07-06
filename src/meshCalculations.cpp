@@ -6,13 +6,14 @@ using namespace vvr;
 
 void getUniqueVertices(vector<vec>& vertices, vector<vec>& unique_vertices, vector<int>& unique_vertex_indices) {
 	unique_vertex_indices.clear();
+	unique_vertices.clear();
 	unique_vertices.push_back(vertices.at(0));
 	unique_vertex_indices.push_back(0);
 	for (int i = 0; i < vertices.size(); i++) {
 		vec vi = vertices.at(i);
 		bool canAddVi = true;
 		for (int j = 0; j < unique_vertex_indices.size(); j++) {
-			vec vj = vertices.at(j);
+			vec vj = unique_vertices.at(j);
 			if (vi.Equals(vj)) {
 				canAddVi = false;
 				break;
