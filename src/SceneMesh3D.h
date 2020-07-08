@@ -62,6 +62,7 @@ private:
 	std::vector<vvr::Triangle> filled_tris_A;
 	SpMat A_adj; // Adjacency matrix of mesh A
 	SpMat Vertex_degrees;
+	SpMat LaplacianA;
 
 	// Model B
 	vvr::Mesh m_model_original_B, m_model_B;
