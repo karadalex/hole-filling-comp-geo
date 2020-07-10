@@ -12,6 +12,8 @@ void getVertexDegreeMatrix(SpMat A, SpMat& D);
 
 void getLaplacianMatrix(SpMat A, SpMat D, SpMat& L);
 
+void getDeltaCoordinates(SpMat A, SpMat D, std::vector<vec> vertices, std::vector<VectorXd>& deltaCoords);
+
 /**
  * Mesh Reconstruction calculation:
  * Inputs:
@@ -35,4 +37,7 @@ public:
     SpMat Vertex_degrees;
 
     SpMat Laplacian;
+
+    std::vector<VectorXd> deltaCoords;
+    std::vector<VectorXd> xyzCoords;
 };
