@@ -11,7 +11,7 @@
 #include "meshCalculations.h"
 #include "utils.h"
 #include "triangulation.h"
-#include "laplacianMeshProcessing.h"
+#include "LaplacianMesh.h"
 
 
 #define FLAG_SHOW_AXES       1
@@ -60,9 +60,9 @@ private:
 	std::vector<vvr::Triangle> m_removed_triangles;
 	// Triangulation that filled holes
 	std::vector<vvr::Triangle> filled_tris_A;
-	SpMat A_adj; // Adjacency matrix of mesh A
-	SpMat Vertex_degrees;
-	SpMat LaplacianA;
+	// Laplacian Mesh of model A:
+	// used for laplacian mesh processing of the model A
+	LaplacianMesh LaplacianA;
 
 	// Model B
 	vvr::Mesh m_model_original_B, m_model_B;
