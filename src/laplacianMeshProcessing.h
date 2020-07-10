@@ -25,6 +25,8 @@ void getAdjacencyMatrix(std::vector<vvr::Triangle> triangles, std::vector<vec> v
 
 void getVertexDegreeMatrix(SpMat A, SpMat& D);
 
+void printNonZeroIndices(SpMat A);
+
 void getLaplacianMatrix(SpMat A, SpMat D, SpMat& L);
 
 /**

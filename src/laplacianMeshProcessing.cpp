@@ -69,11 +69,22 @@ void getAdjacencyMatrix(std::vector<vvr::Triangle> triangles, std::vector<vec> v
 
 
 void getVertexDegreeMatrix(SpMat A, SpMat& D) {
-	int N = A.cols();
+	int N = A.rows();
 	D = *(new SpMat(N, N));
 
 	for (int i = 0; i < N; i++)
-		D.coeffRef(i,i) = (A.col(i).sum()>0) ? A.col(i).sum() - 1 : 0;
+		D.coeffRef(i,i) = (A.row(i).nonZeros()>0) ? A.row(i).nonZeros() - 1 : 0;
+}
+
+
+void printNonZeroIndices(SpMat A) {
+	int N = A.rows();
+	for (int k = 0; k < A.outerSize(); ++k) {
+		for (SpMat::InnerIterator it(A, k); it; ++it) {
+			std::cout << "(" << it.row() << ",";
+			std::cout << it.col() << ")\t";
+		}
+	}
 }
 
 
