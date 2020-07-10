@@ -85,3 +85,17 @@ void getLaplacianMatrix(SpMat A, SpMat D, SpMat& L) {
 	L = *(new SpMat(N, N));
 	L = D_inv * A;
 }
+
+
+void getSurfaceReconstructionFromDCoords(SpMat anchoredL, std::vector<VectorXd> anchoredDCoords, std::vector<VectorXd>& xyzCoords) {
+	SpMatC L_pinv;
+	getSpMatPseudoInverse(anchoredL, L_pinv);
+
+	xyzCoords.clear();
+	for (int i = 0; i < 3; i++) {
+		VectorXd b = anchoredDCoords.at(i);
+		VectorXd x;
+		x = L_pinv * b;
+		xyzCoords.push_back(x);
+	}
+}
