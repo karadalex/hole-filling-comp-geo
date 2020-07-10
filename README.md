@@ -1,6 +1,11 @@
 Hole Filing
 ===========
 
+## Requirements
+
+- Eigen 3.3.7
+- OpenMP
+
 ## Setup Instructions
 
 ## Keyboard functions

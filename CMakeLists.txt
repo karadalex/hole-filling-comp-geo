@@ -18,6 +18,7 @@ include_directories(${VVRFRAMEWORK_DIR}/include/GeoLib)
 include_directories(${VVRFRAMEWORK_DIR}/include/MathGeoLib)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(OpenMP)
 
 
 add_executable(${SOLUTIONTITLE} ${FILES_SRC})
@@ -27,6 +28,7 @@ ${VVRFRAMEWORK_DIR}/lib/VVRScene_d.lib
 ${VVRFRAMEWORK_DIR}/lib/GeoLib_d.lib 
 ${VVRFRAMEWORK_DIR}/lib/MathGeoLib_d.lib
 Eigen3::Eigen
+OpenMP::OpenMP_CXX
 )
 add_custom_command(TARGET ${SOLUTIONTITLE} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${VVRFRAMEWORK_DIR}/lib" ${CMAKE_BINARY_DIR}/$<CONFIG>)
 

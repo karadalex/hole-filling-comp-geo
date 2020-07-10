@@ -276,6 +276,8 @@ void Mesh3DScene::drawBoundaries() {
 
 int main(int argc, char* argv[])
 {
+	cout << "Using number of threads = " << Eigen::nbThreads() << endl;
+
 	try {
 		return vvr::mainLoop(argc, argv, new Mesh3DScene);
 	}
