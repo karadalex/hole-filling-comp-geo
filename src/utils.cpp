@@ -31,6 +31,15 @@ void printNonZeroIndices(SpMat A) {
 }
 
 
+void printTime(time_point start, time_point stop) {
+	long secs_duration = std::chrono::duration_cast<secs>(stop - start).count();
+	long millis_duration = std::chrono::duration_cast<millis>(stop - start).count();
+	long nanos_duration = std::chrono::duration_cast<nanos>(stop - start).count();
+
+	std::cout << secs_duration << " seconds = " << millis_duration << " milliseconds = " << nanos_duration << " nanoseconds" << std::endl;
+}
+
+
 void getSpMatInverse(SpMat A, SpMatC& A_inv) {
 	int N = A.cols();
 	SpMatC I = *(new SpMatC(N, N));

@@ -276,6 +276,7 @@ void Mesh3DScene::drawBoundaries() {
 
 int main(int argc, char* argv[])
 {
+	//Eigen::setNbThreads(1);  // Disable parallelization
 	cout << "Using number of threads = " << Eigen::nbThreads() << endl;
 
 	try {

@@ -100,7 +100,7 @@ void getSurfaceReconstructionFromDCoords(SpMat anchoredL, std::vector<VectorXd> 
 		x = L_pinv * b;
 		xyzCoords.push_back(x);
 
-		printVector(x); std::cout << std::endl;
+		//printVector(x); std::cout << std::endl;
 	}
 }
 
@@ -108,14 +108,33 @@ void getSurfaceReconstructionFromDCoords(SpMat anchoredL, std::vector<VectorXd> 
 LaplacianMesh::LaplacianMesh(std::vector<vvr::Triangle> triangles, std::vector<vec> vertices) 
 	: triangles(triangles), vertices(vertices)
 {
+	time_point start_time, stop_time;
+	
+	start_time = steady_clock::now();
 	getAdjacencyMatrix(triangles, vertices, A_adj);
+	stop_time = steady_clock::now();
+	std::cout << "Adjacency matrix was calculated in "; printTime(start_time, stop_time);
 	//std::cout << A_adj << std::endl;
+
+	start_time = steady_clock::now();
 	getVertexDegreeMatrix(A_adj, Vertex_degrees);
-	//std::cout << Vertex_degrees << std::endl;
+	stop_time = steady_clock::now();
+	std::cout << "Vertex degree matrix was calculated "; printTime(start_time, stop_time);
+	////std::cout << Vertex_degrees << std::endl;
+
+	start_time = steady_clock::now();
 	getLaplacianMatrix(A_adj, Vertex_degrees, Laplacian);
-	//std::cout << Laplacian << std::endl;
+	stop_time = steady_clock::now();
+	std::cout << "Laplacian matrix was calculated "; printTime(start_time, stop_time);
+	////std::cout << Laplacian << std::endl;
 
+	start_time = steady_clock::now();
 	getDeltaCoordinates(A_adj, Vertex_degrees, vertices, deltaCoords);
+	stop_time = steady_clock::now();
+	std::cout << "Delta coordinates were calculated "; printTime(start_time, stop_time);
 
+	start_time = steady_clock::now();
 	getSurfaceReconstructionFromDCoords(Laplacian, deltaCoords, xyzCoords);
+	stop_time = steady_clock::now();
+	std::cout << "Surface reconstruction was calculated "; printTime(start_time, stop_time);
 }
