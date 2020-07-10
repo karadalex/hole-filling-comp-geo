@@ -12,6 +12,14 @@ void printVector(vector<int> vec, string vec_name = "vector") {
 }
 
 
+void printVector(VectorXd vec) {
+	int N = vec.size();
+	for (int i = 0; i < N; i++) {
+		std::cout << vec(i) << std::endl;
+	}
+}
+
+
 void printNonZeroIndices(SpMat A) {
 	int N = A.rows();
 	for (int k = 0; k < A.outerSize(); ++k) {

@@ -15,6 +15,8 @@ typedef Eigen::Triplet<double> T;
 
 void printVector(std::vector<int> vec, std::string vec_name);
 
+void printVector(VectorXd vec);
+
 void printNonZeroIndices(SpMat A);
 
 /**
