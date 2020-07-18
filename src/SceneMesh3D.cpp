@@ -12,8 +12,8 @@ Mesh3DScene::Mesh3DScene()
 	vvr::Shape::DEF_LINE_WIDTH = 4;
 	vvr::Shape::DEF_POINT_SIZE = 10;
 	m_perspective_proj = true;
-	m_bg_col = Colour("768E77");
-	m_obj_col = Colour("454545");
+	m_bg_col = Colour::white;
+	m_obj_col = Colour("bfbfbf");
 	m_perspective_proj = true;
 	m_hide_log = false;
 	m_hide_sliders = true;
@@ -45,6 +45,7 @@ Mesh3DScene::Mesh3DScene()
 	show_model_A_boundaries = false;
 	show_filled_triangles = false;
 	show_delauny_violations = false;
+	show_laplacian_processing = false;
 
 	reset();
 }
@@ -175,6 +176,7 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			break;
 		case 'l':
 			show_filled_triangles = !show_filled_triangles;
+			show_laplacian_processing = !show_laplacian_processing;
 			getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
 			getTrianglesWithUniqueVertices(m_model_A_triangles, unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
 			LaplacianA = LaplacianMesh(unique_tris_A, m_model_A.getVertices());
@@ -234,6 +236,16 @@ void Mesh3DScene::draw()
 				Colour::orange);
 			t3d.draw();
 		}			
+	}
+
+	if (show_laplacian_processing) {
+		VectorXd vecX = LaplacianA.xyzCoords.at(0);
+		int recVertNum = vecX.rows();
+		VectorXd vecY = LaplacianA.xyzCoords.at(1);
+		VectorXd vecZ = LaplacianA.xyzCoords.at(2);
+		for (int i = 0; i < recVertNum; i++) {
+			Point3D(vecX.coeffRef(i), vecY.coeffRef(i), vecZ.coeffRef(i), Colour::darkGreen).draw();
+		}
 	}
 
 	if (show_model_A_boundaries) drawBoundaries();
