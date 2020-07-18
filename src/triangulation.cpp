@@ -34,3 +34,107 @@ void simpleTriangulation(std::vector<vvr::Triangle>& filled_tris_A, std::vector<
 		}
 	}
 }
+
+
+void delauny3DTriangulation(std::vector<vvr::Triangle>& triangles) {
+	std::vector<vvr::Triangle> new_triangles;
+	for (int i = 0; i < triangles.size(); i++) {
+		vvr::Triangle tri1 = triangles.at(i);
+		vec a = tri1.v1();
+		vec b = tri1.v2();
+		vec c = tri1.v3();
+
+		Sphere sphere = getTriangleCircumcircle(tri1);
+
+		for (int j = 0; j < triangles.size() && j!=i; j++) {
+			vvr::Triangle tri2 = triangles.at(j);
+			vec a2 = tri2.v1();
+			vec b2 = tri2.v2();
+			vec c2 = tri2.v3();
+
+
+			if ((a.Equals(a2) && b.Equals(b2)) || (a.Equals(b2) && b.Equals(a2))) {
+				// ab is common
+				if (sphere.Contains(c2)) {
+					// Flip common edge
+					b = c2;
+					tri1.vi2 = tri2.vi3;
+					a2 = c;
+					break;
+				}
+			} else if ((a.Equals(a2) && c.Equals(c2)) || (a.Equals(c2) && c.Equals(a2))) {
+				// ac is common
+				if (sphere.Contains(b2)) {
+					// Flip common edge
+					c = b2;
+					tri1.vi3 = tri2.vi2;
+					a2 = b;
+					break;
+				}
+			} else if ((b.Equals(b2) && c.Equals(c2)) || (b.Equals(c2) && c.Equals(b2))) {
+				// bc is common
+				if (sphere.Contains(a2)) {
+					// Flip common edge
+					c = a2;
+					tri1.vi3 = tri2.vi1;
+					b2 = a;
+					break;
+				}
+			}
+		}
+
+		new_triangles.push_back(tri1);
+	}
+
+	// Replace old triangles with new ones
+	triangles.clear();
+	for (int i = 0; i < new_triangles.size(); i++) {
+		triangles.push_back(new_triangles.at(i));
+	}
+}
+
+
+bool checkDelauncyViolation(std::vector<vvr::Triangle> triangles, std::vector<Sphere>& spheres) {
+	bool thereAreViolations = false;
+
+	for (int i = 0; i < triangles.size(); i++) {
+		vvr::Triangle tri1 = triangles.at(i);
+		vec a = tri1.v1();
+		vec b = tri1.v2();
+		vec c = tri1.v3();
+
+		Sphere sphere = getTriangleCircumcircle(tri1);
+
+		for (int j = 0; j < triangles.size() && j != i; j++) {
+			vvr::Triangle tri2 = triangles.at(j);
+			vec a2 = tri2.v1();
+			vec b2 = tri2.v2();
+			vec c2 = tri2.v3();
+
+
+			if ((a.Equals(a2) && b.Equals(b2)) || (a.Equals(b2) && b.Equals(a2))) {
+				// ab is common
+				if (sphere.Contains(c2)) {
+					thereAreViolations = true;
+					spheres.push_back(sphere);
+				}
+			}
+			else if ((a.Equals(a2) && c.Equals(c2)) || (a.Equals(c2) && c.Equals(a2))) {
+				// ac is common
+				if (sphere.Contains(b2)) {
+					thereAreViolations = true;
+					spheres.push_back(sphere);
+				}
+			}
+			else if ((b.Equals(b2) && c.Equals(c2)) || (b.Equals(c2) && c.Equals(b2))) {
+				// bc is common
+				if (sphere.Contains(a2)) {
+					thereAreViolations = true;
+					spheres.push_back(sphere);
+				}
+			}
+		}
+	}
+
+	return thereAreViolations;
+}

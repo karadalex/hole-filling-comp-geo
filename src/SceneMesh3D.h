@@ -41,6 +41,7 @@ private:
 	bool show_model_A_with_holes;
 	bool show_model_A_boundaries;
 	bool show_filled_triangles;
+	bool show_delauny_violations;
 	vvr::Canvas2D m_canvas;
 	vvr::Colour m_obj_col;
 	math::vec m_center_mass;

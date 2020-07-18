@@ -44,6 +44,7 @@ Mesh3DScene::Mesh3DScene()
 	show_model_A_with_holes = false;
 	show_model_A_boundaries = false;
 	show_filled_triangles = false;
+	show_delauny_violations = false;
 
 	reset();
 }
@@ -139,6 +140,8 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 	Scene::keyEvent(key, up, modif);
 	key = tolower(key);
 
+	vector<vvr::Triangle> m_model_A_triangles = m_model_A.getTriangles();
+
 	switch (key)
 	{
 		case 's': m_style_flag ^= FLAG_SHOW_SOLID; break;
@@ -173,9 +176,16 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 		case 'l':
 			show_filled_triangles = !show_filled_triangles;
 			getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
-			getTrianglesWithUniqueVertices(m_model_A.getTriangles(), unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
-
+			getTrianglesWithUniqueVertices(m_model_A_triangles, unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
 			LaplacianA = LaplacianMesh(unique_tris_A, m_model_A.getVertices());
+			break;
+		case 'd':
+			for each (auto tri in filled_tris_A) m_model_A_triangles.push_back(tri);
+			delauny3DTriangulation(m_model_A_triangles);
+			break;
+		case 'v':
+			show_delauny_violations = !show_delauny_violations;
+			break;
 	}
 }
 
@@ -227,6 +237,14 @@ void Mesh3DScene::draw()
 	}
 
 	if (show_model_A_boundaries) drawBoundaries();
+
+	if (show_delauny_violations) {
+		vector<Sphere> spheres;
+		checkDelauncyViolation(filled_tris_A, spheres);
+		for each (Sphere s in spheres) {
+			Sphere3D(s.pos.x, s.pos.y, s.pos.z, s.r, Colour::darkRed).draw();
+		}
+	}
 
 	// Recalculate model B AABB because it is free to move and thus AABB is changed
 	getMeshAABB(m_model_B.getVertices(), m_aabb_B);

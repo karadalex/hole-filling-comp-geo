@@ -28,3 +28,5 @@ void detectAndGetModelBoundaryVertices(std::vector<vvr::Triangle> triangles, std
 bool checkCommonEdge(vec v1, vec v2, vvr::Triangle other_tri);
 
 bool checkCommonEdge(int vi1, int vi2, vvr::Triangle other_tri);
+
+Sphere getTriangleCircumcircle(vvr::Triangle tri);

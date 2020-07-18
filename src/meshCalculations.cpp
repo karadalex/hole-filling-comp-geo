@@ -232,3 +232,20 @@ bool checkCommonEdge(int vi1, int vi2, vvr::Triangle other_tri) {
 		|| (vi1 == other_tri.vi1 && vi2 == other_tri.vi3) || (vi1 == other_tri.vi3 && vi2 == other_tri.vi1) // other_tri: v1v3 or v3v1
 		);
 }
+
+
+Sphere getTriangleCircumcircle(vvr::Triangle tri) {
+	vec a = tri.v1();
+	vec b = tri.v2();
+	vec c = tri.v3();
+
+	vec ab = b - a;
+	vec ac = c - a;
+	vec abxac = ab.Cross(ac);
+	const vec aToCenter = (abxac.Cross(ab) * ac.LengthSq() + ac.Cross(abxac) * ab.LengthSq()) / (2 * abxac.LengthSq());
+	const float radius = aToCenter.Length();
+	vec center = a + aToCenter;
+
+	Sphere sphere(center, radius);
+	return sphere;
+}
