@@ -1,5 +1,6 @@
 #include <Eigen/Sparse>
 #include <Eigen/SparseQR>
+#include <Eigen/Eigenvalues>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -27,6 +28,8 @@ void printVector(VectorXd vec);
 
 void printNonZeroIndices(SpMat A);
 
+void printMatrix(MatrixXd A);
+
 void printTime(time_point start, time_point stop);
 
 /**
@@ -38,3 +41,8 @@ void getSpMatInverse(SpMat A, SpMatC& A_inv);
  * Calculate pseudo-inverse of a square Sparse Matrix
 */
 void getSpMatPseudoInverse(SpMat A, SpMatC& A_pinv);
+
+/**
+ * Calculate the eigenvalues and eigenvectors of the Sparse Matric M
+*/
+void getEigenValuesAndVectors(SpMat M, VectorXd& eigenValues, MatrixXd& eigenVectors);

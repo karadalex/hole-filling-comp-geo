@@ -31,6 +31,18 @@ void printNonZeroIndices(SpMat A) {
 }
 
 
+void printMatrix(MatrixXd A) {
+	int N = A.rows();
+	int M = A.cols();
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			std::cout << A(i, j) << "  ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+
 void printTime(time_point start, time_point stop) {
 	long secs_duration = std::chrono::duration_cast<secs>(stop - start).count();
 	long millis_duration = std::chrono::duration_cast<millis>(stop - start).count();
@@ -49,7 +61,7 @@ void getSpMatInverse(SpMat A, SpMatC& A_inv) {
 	Ac.makeCompressed();
 
 	// Sparse Matrices in Eigen don't have inverse method, so we have to calculate it manually
-	// We will use the SparseLU solver to solve for the inverse of D
+	// We will use the SparseQR solver to solve for the inverse of D
 	// According to Documentation: SparseQR: QR factorization for Square matrices 
 	SparseQR<SpMatC, COLAMDOrdering<int>> solver;
 
@@ -78,4 +90,13 @@ void getSpMatPseudoInverse(SpMat A, SpMatC& A_pinv) {
 	getSpMatInverse(squareA, squareAInv);
 
 	A_pinv = squareAInv * (SpMatC)A_T;
+}
+
+
+void getEigenValuesAndVectors(SpMat M, VectorXd& eigenValues, MatrixXd& eigenVectors) {
+	//find the eigen values and eiven vectors and store them
+	SelfAdjointEigenSolver<SpMat> eigen(M);
+	eigenValues = eigen.eigenvalues();
+	eigenVectors = eigen.eigenvectors();
+	printMatrix(eigenVectors);
 }

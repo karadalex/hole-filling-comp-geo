@@ -43,6 +43,10 @@ public:
     // Laplacian and Symmetric Laplacian matrices
     SpMat L, Ls;
 
+    // Spectral decomposition of Ls
+    VectorXd Ls_eValues;
+    MatrixXd Ls_eVectors;
+
     std::vector<VectorXd> deltaCoords;
     std::vector<VectorXd> xyzCoords;
 };

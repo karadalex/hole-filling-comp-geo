@@ -140,6 +140,12 @@ LaplacianMesh::LaplacianMesh(std::vector<vvr::Triangle> triangles, std::vector<v
 	//std::cout << Ls << std::endl;
 
 	start_time = steady_clock::now();
+	getEigenValuesAndVectors(Ls, Ls_eValues, Ls_eVectors);
+	stop_time = steady_clock::now();
+	std::cout << "Eigen values and vectors of Symmetric Laplacian matrix were calculated in "; printTime(start_time, stop_time);
+	//std::cout << Ls << std::endl;
+
+	start_time = steady_clock::now();
 	getDeltaCoordinates(A_adj, Vertex_degrees, vertices, deltaCoords);
 	stop_time = steady_clock::now();
 	std::cout << "Delta coordinates were calculated in "; printTime(start_time, stop_time);
