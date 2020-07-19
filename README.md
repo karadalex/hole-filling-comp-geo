@@ -21,5 +21,6 @@ Hole Filing
 - `f`: mesh filling with distance-aware triangulation
 - `l`: mesh filling with geometry-aware triangulation (laplacian mesh processing)
 - `d`: delauny triangulation and mesh density improvement
-- `m`: mesh smoothing
 - `v` : show delauny violations
+- `m`: mesh smoothing
+- `p`: mesh smoothing around holes

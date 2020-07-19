@@ -39,3 +39,12 @@ Sphere getTriangleCircumcircle(vvr::Triangle tri);
  * SpMat D : sparse diagonal matrix with degree of each vertex (number of neighboors)
 */
 void meshSmothingAverage(vvr::Mesh& mesh, SpMat Adj, SpMat D);
+
+/**
+ * Return smoothed mesh around specified vertices using moving average filter
+ * vvr::Mesh& mesh : model's mesh to smooth
+ * SpMat Adj : sparse adjacency matrix of mesh
+ * SpMat D : sparse diagonal matrix with degree of each vertex (number of neighboors)
+ * std::vector<int> vertices_to_edit : indices of vertices to smooth
+*/
+void meshSmothingAverage(vvr::Mesh& mesh, std::vector<int> vertices_to_edit, SpMat A, SpMat D);
