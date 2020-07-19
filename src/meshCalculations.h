@@ -30,7 +30,7 @@ bool checkCommonEdge(vec v1, vec v2, vvr::Triangle other_tri);
 
 bool checkCommonEdge(int vi1, int vi2, vvr::Triangle other_tri);
 
-Sphere getTriangleCircumcircle(vvr::Triangle tri);
+Sphere getTriangleCircumsphere(vvr::Triangle tri);
 
 /**
  * Return smoothed mesh using moving average filter
@@ -48,3 +48,14 @@ void meshSmothingAverage(vvr::Mesh& mesh, SpMat Adj, SpMat D);
  * std::vector<int> vertices_to_edit : indices of vertices to smooth
 */
 void meshSmothingAverage(vvr::Mesh& mesh, std::vector<int> vertices_to_edit, SpMat A, SpMat D);
+
+/**
+ * Calculate density of triangles around given vertex, using sphere with given vertex as center and given radius
+*/
+int getTrianglesDensityAroundVertex(vvr::Mesh mesh, int vertex, float radius);
+int getTrianglesDensityAroundVertex(vvr::Mesh mesh, vec vertex, float radius);
+
+/**
+ * Add vertices if local triangle density is lower than that of neighbourhoods
+*/
+void meshDensityImprovement(vvr::Mesh& mesh, std::vector<int> vertices_to_edit, SpMat A);

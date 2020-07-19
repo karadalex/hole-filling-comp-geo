@@ -183,8 +183,10 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			LaplacianA = LaplacianMesh(m_removed_triangles, m_model_A.getVertices());
 			break;
 		case 'd':
-			for each (auto tri in filled_tris_A) m_model_A_triangles.push_back(tri);
-			delauny3DTriangulation(m_model_A_triangles);
+			//for each (auto tri in filled_tris_A) m_model_A_triangles.push_back(tri);
+			//delauny3DTriangulation(m_model_A_triangles);
+			for each (vec v in m_model_A.getVertices())
+				std::cout << getTrianglesDensityAroundVertex(m_model_A, v, 0.5) << " ";
 			break;
 		case 'm':
 			{

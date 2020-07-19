@@ -44,7 +44,7 @@ void delauny3DTriangulation(std::vector<vvr::Triangle>& triangles) {
 		vec b = tri1.v2();
 		vec c = tri1.v3();
 
-		Sphere sphere = getTriangleCircumcircle(tri1);
+		Sphere sphere = getTriangleCircumsphere(tri1);
 
 		for (int j = 0; j < triangles.size() && j!=i; j++) {
 			vvr::Triangle tri2 = triangles.at(j);
@@ -103,7 +103,7 @@ bool checkDelauncyViolation(std::vector<vvr::Triangle> triangles, std::vector<Sp
 		vec b = tri1.v2();
 		vec c = tri1.v3();
 
-		Sphere sphere = getTriangleCircumcircle(tri1);
+		Sphere sphere = getTriangleCircumsphere(tri1);
 
 		for (int j = 0; j < triangles.size() && j != i; j++) {
 			vvr::Triangle tri2 = triangles.at(j);

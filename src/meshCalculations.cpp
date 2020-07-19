@@ -234,7 +234,7 @@ bool checkCommonEdge(int vi1, int vi2, vvr::Triangle other_tri) {
 }
 
 
-Sphere getTriangleCircumcircle(vvr::Triangle tri) {
+Sphere getTriangleCircumsphere(vvr::Triangle tri) {
 	vec a = tri.v1();
 	vec b = tri.v2();
 	vec c = tri.v3();
@@ -305,5 +305,63 @@ void meshSmothingAverage(vvr::Mesh& mesh, std::vector<int> vertices_to_edit, SpM
 			}
 			vi = avg / di;
 		}
+	}
+}
+
+
+int getTrianglesDensityAroundVertex(vvr::Mesh mesh, int vertex, float radius) {
+	vec v = mesh.getVertices().at(vertex);
+	Sphere sphere(v, radius);
+	int density = 0;
+
+	for each (vvr::Triangle tri in mesh.getTriangles()) {
+		vec v1 = tri.v1();
+		vec v2 = tri.v2();
+		vec v3 = tri.v3();
+
+		if (sphere.Contains(v1) && sphere.Contains(v2) && sphere.Contains(v3)) density++;
+	}
+
+	return density;
+}
+
+
+int getTrianglesDensityAroundVertex(vvr::Mesh mesh, vec vertex, float radius) {
+	Sphere sphere(vertex, radius);
+	int density = 0;
+
+	for each (vvr::Triangle tri in mesh.getTriangles()) {
+		vec v1 = tri.v1();
+		vec v2 = tri.v2();
+		vec v3 = tri.v3();
+
+		if (sphere.Contains(v1) && sphere.Contains(v2) && sphere.Contains(v3)) density++;
+	}
+
+	return density;
+}
+
+
+void meshDensityImprovement(vvr::Mesh& mesh, std::vector<int> vertices_to_edit, SpMat A) {
+	vvr::Mesh original_mesh = mesh;
+
+	//vector<vvr::Triangle>& triangles = mesh.getTriangles();
+	vector<vec>& vertices = mesh.getVertices();
+
+	// Iterate over non-zero values of the Adjacency matrix and calculate delta Coordinates
+	for each (int i in vertices_to_edit) {
+		vec& vi = vertices.at(i);
+		int densityAtVi = getTrianglesDensityAroundVertex(mesh, i, 5);
+
+		int avgDensity = 0;
+		int k = 0;
+		for (SpMat::InnerIterator it(A, i); it; ++it) {
+			int j = it.col();
+			avgDensity += getTrianglesDensityAroundVertex(mesh, j, 5);
+			k++;
+		}
+		if (k > 0) avgDensity /= k;
+
+		// TODO
 	}
 }
