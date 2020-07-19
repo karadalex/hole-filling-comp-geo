@@ -211,7 +211,7 @@ void Mesh3DScene::draw()
 
 	if (!show_model_A_with_holes) {
 		if (m_style_flag & FLAG_SHOW_SOLID) {
-			m_model_B.draw(m_obj_col, SOLID);
+			m_model_B.draw(Colour("b2ac87"), SOLID);
 		}
 		if (m_style_flag & FLAG_SHOW_WIRE) {
 			m_model_B.draw(Colour::black, WIRE);
