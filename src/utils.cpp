@@ -45,7 +45,8 @@ void getSpMatInverse(SpMat A, SpMatC& A_inv) {
 	SpMatC I = *(new SpMatC(N, N));
 	I.setIdentity();
 
-	A.makeCompressed();
+	SpMatC Ac = A;
+	Ac.makeCompressed();
 
 	// Sparse Matrices in Eigen don't have inverse method, so we have to calculate it manually
 	// We will use the SparseLU solver to solve for the inverse of D
@@ -57,10 +58,10 @@ void getSpMatInverse(SpMat A, SpMatC& A_inv) {
 	// It is used to reorder the columns (and eventually the rows) of the matrix to reduce the number 
 	// of new elements that are created during numerical factorization. The cheapest method available 
 	// is COLAMD. See the OrderingMethods module for the list of built-in and external ordering methods.
-	solver.analyzePattern((SpMatC)A);
+	solver.analyzePattern(Ac);
 
 	// Compute the numerical factorization 
-	solver.factorize((SpMatC)A);
+	solver.factorize(Ac);
 
 	A_inv = solver.solve(I);
 
@@ -76,5 +77,5 @@ void getSpMatPseudoInverse(SpMat A, SpMatC& A_pinv) {
 	SpMatC squareAInv;
 	getSpMatInverse(squareA, squareAInv);
 
-	A_pinv = squareAInv * A_T;
+	A_pinv = squareAInv * (SpMatC)A_T;
 }
