@@ -14,6 +14,8 @@ void getVertexDegreeMatrix(SpMat A, SpMat& D);
 
 void getLaplacianMatrix(SpMat A, SpMat D, SpMat& L);
 
+void getSymmetricLaplacianMatrix(SpMat A, SpMat D, SpMat& Ls);
+
 void getDeltaCoordinates(SpMat A, SpMat D, std::vector<vec> vertices, std::vector<VectorXd>& deltaCoords);
 
 /**
@@ -38,7 +40,8 @@ public:
 
     SpMat Vertex_degrees;
 
-    SpMat Laplacian;
+    // Laplacian and Symmetric Laplacian matrices
+    SpMat L, Ls;
 
     std::vector<VectorXd> deltaCoords;
     std::vector<VectorXd> xyzCoords;

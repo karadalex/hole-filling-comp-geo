@@ -13,7 +13,7 @@ Mesh3DScene::Mesh3DScene()
 	vvr::Shape::DEF_POINT_SIZE = 10;
 	m_perspective_proj = true;
 	m_bg_col = Colour::white;
-	m_obj_col = Colour("bfbfbf");
+	m_obj_col = Colour("6b6b6b");
 	m_perspective_proj = true;
 	m_hide_log = false;
 	m_hide_sliders = true;
@@ -179,7 +179,8 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			show_laplacian_processing = !show_laplacian_processing;
 			getUniqueVertices(m_model_A.getVertices(), unique_verts_A, unique_verts_ind_A);
 			getTrianglesWithUniqueVertices(m_model_A_triangles, unique_tris_A, unique_verts_A, unique_verts_ind_A, m_model_A.getVertices());
-			LaplacianA = LaplacianMesh(unique_tris_A, m_model_A.getVertices());
+			//LaplacianA = LaplacianMesh(m_model_A_triangles, m_model_A.getVertices());
+			LaplacianA = LaplacianMesh(m_removed_triangles, m_model_A.getVertices());
 			break;
 		case 'd':
 			for each (auto tri in filled_tris_A) m_model_A_triangles.push_back(tri);
