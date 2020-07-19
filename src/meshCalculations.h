@@ -3,6 +3,7 @@
 #include <VVRScene/settings.h>
 #include <VVRScene/utils.h>
 #include <MathGeoLib.h>
+#include "utils.h"
 
 
 void getUniqueVertices(std::vector<vec>& vertices, std::vector<vec>& unique_vertices, std::vector<int>& unique_vertex_indices);
@@ -30,3 +31,11 @@ bool checkCommonEdge(vec v1, vec v2, vvr::Triangle other_tri);
 bool checkCommonEdge(int vi1, int vi2, vvr::Triangle other_tri);
 
 Sphere getTriangleCircumcircle(vvr::Triangle tri);
+
+/**
+ * Return smoothed mesh using moving average filter
+ * vvr::Mesh& mesh : model's mesh to smooth
+ * SpMat Adj : sparse adjacency matrix of mesh
+ * SpMat D : sparse diagonal matrix with degree of each vertex (number of neighboors)
+*/
+void meshSmothingAverage(vvr::Mesh& mesh, SpMat Adj, SpMat D);

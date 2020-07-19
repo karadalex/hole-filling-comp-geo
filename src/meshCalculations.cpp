@@ -249,3 +249,32 @@ Sphere getTriangleCircumcircle(vvr::Triangle tri) {
 	Sphere sphere(center, radius);
 	return sphere;
 }
+
+
+void meshSmothingAverage(vvr::Mesh& mesh, SpMat A, SpMat D) {
+	vvr::Mesh original_mesh = mesh;
+
+	//vector<vvr::Triangle>& triangles = mesh.getTriangles();
+	vector<vec>& vertices = mesh.getVertices();
+
+	// Iterate over non-zero values of the Adjacency matrix and calculate delta Coordinates
+	for (int i = 0; i < A.outerSize(); ++i) {
+		vec& vi = vertices.at(i);
+		double di = D.coeffRef(i, i);
+		vec avg = vec(0, 0, 0);
+		if (di > 0) { // Continue if there are neighbors
+			for (SpMat::InnerIterator it(A, i); it; ++it) {
+				//it.row();   // row index (here it is equal to i, because SpMat is RowMajor)
+				//it.col();   // col index
+				//it.index(); // inner index, here it is equal to it.col()
+
+				int j = it.col();
+				if (i != j) {
+					vec vj = vertices.at(j);
+					avg += vj;
+				}
+			}
+			vi = avg / di;
+		}
+	}
+}

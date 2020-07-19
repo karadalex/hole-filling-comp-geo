@@ -186,6 +186,14 @@ void Mesh3DScene::keyEvent(unsigned char key, bool up, int modif)
 			for each (auto tri in filled_tris_A) m_model_A_triangles.push_back(tri);
 			delauny3DTriangulation(m_model_A_triangles);
 			break;
+		case 'm':
+			{
+				SpMat A, D;
+				getAdjacencyMatrix(unique_tris_A, m_model_A.getVertices(), A);
+				getVertexDegreeMatrix(A, D);
+				meshSmothingAverage(m_model_A, A, D);
+			}
+			break;
 		case 'v':
 			show_delauny_violations = !show_delauny_violations;
 			break;
