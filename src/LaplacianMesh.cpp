@@ -71,7 +71,7 @@ void getDeltaCoordinates(SpMat A, SpMat D, std::vector<vec> vertices, std::vecto
 					dCoord_i += vi - vj;
 				}
 			}
-			dCoord_i /= di;
+			dCoord_i = dCoord_i / di;
 		}
 
 		dCoordX(i) = dCoord_i.x;
@@ -114,7 +114,7 @@ LaplacianMesh::LaplacianMesh(std::vector<vvr::Triangle> triangles, std::vector<v
 	getAdjacencyMatrix(triangles, vertices, A_adj);
 	stop_time = steady_clock::now();
 	std::cout << "Adjacency matrix was calculated in "; printTime(start_time, stop_time);
-	//std::cout << A_adj << std::endl;
+	std::cout << A_adj << std::endl;
 
 	start_time = steady_clock::now();
 	getVertexDegreeMatrix(A_adj, Vertex_degrees);
@@ -131,10 +131,51 @@ LaplacianMesh::LaplacianMesh(std::vector<vvr::Triangle> triangles, std::vector<v
 	start_time = steady_clock::now();
 	getDeltaCoordinates(A_adj, Vertex_degrees, vertices, deltaCoords);
 	stop_time = steady_clock::now();
-	std::cout << "Delta coordinates were calculated "; printTime(start_time, stop_time);
+	std::cout << "Delta coordinates were calculated in "; printTime(start_time, stop_time);
+	for (int i = 0; i < deltaCoords.at(0).rows(); i++) {
+		std::cout << "(" << deltaCoords.at(0).coeffRef(i) << "," << deltaCoords.at(1).coeffRef(i) << "," << deltaCoords.at(2).coeffRef(i) << ")\n";
+	}
+
 
 	start_time = steady_clock::now();
-	getSurfaceReconstructionFromDCoords(Laplacian, deltaCoords, xyzCoords);
+	// Set anchor points
+	int N = Laplacian.rows();
+	int anchorsNum = floor(vertices.size()*0.5);
+	//int anchorsNum = 2;
+
+	SpMat anchoredLaplacian(N + anchorsNum, N);
+	VectorXd anchoredDeltaCoordsX(N + anchorsNum);
+	VectorXd anchoredDeltaCoordsY(N + anchorsNum);
+	VectorXd anchoredDeltaCoordsZ(N + anchorsNum);
+	std::vector<VectorXd> anchoredDeltaCoords;
+
+	// Constructed anchored matrices with block operations
+	anchoredLaplacian.topRows(N) = Laplacian.topRows(N);
+	anchoredDeltaCoordsX.topRows(N) = deltaCoords.at(0).topRows(N);
+	anchoredDeltaCoordsY.topRows(N) = deltaCoords.at(1).topRows(N);
+	anchoredDeltaCoordsZ.topRows(N) = deltaCoords.at(2).topRows(N);
+	SpMat anchorInitial(anchorsNum, N);
+	anchorInitial.setZero();
+	anchoredLaplacian.bottomRows(anchorsNum) = anchorInitial.bottomRows(anchorsNum);
+
+	// set as anchor points anchorsNum vertices selected randomly
+	srand(time(NULL));
+	for (int i = 0; i < anchorsNum; i++) {
+		int iSelect = rand() % N;
+		anchoredDeltaCoordsX.coeffRef(N + i) = vertices.at(iSelect).x;
+		anchoredDeltaCoordsY.coeffRef(N + i) = vertices.at(iSelect).y;
+		anchoredDeltaCoordsZ.coeffRef(N + i) = vertices.at(iSelect).z;
+		anchoredLaplacian.coeffRef(N + i, iSelect) = 1;
+	}
+
+	anchoredDeltaCoords.push_back(anchoredDeltaCoordsX);
+	anchoredDeltaCoords.push_back(anchoredDeltaCoordsY);
+	anchoredDeltaCoords.push_back(anchoredDeltaCoordsZ);
+
+	getSurfaceReconstructionFromDCoords(anchoredLaplacian, anchoredDeltaCoords, xyzCoords);
 	stop_time = steady_clock::now();
 	std::cout << "Surface reconstruction was calculated "; printTime(start_time, stop_time);
+	for (int i = 0; i < xyzCoords.at(0).rows(); i++) {
+		std::cout << "(" << xyzCoords.at(0).coeffRef(i) << "," << xyzCoords.at(1).coeffRef(i) << "," << xyzCoords.at(2).coeffRef(i) << ")\n";
+	}
 }
